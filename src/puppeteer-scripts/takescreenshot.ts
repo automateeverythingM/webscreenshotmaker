@@ -1,31 +1,27 @@
-import puppeteer, {
-  PuppeteerLaunchOptions,
-  ScreenshotOptions,
-} from "puppeteer";
+import {
+  Browser,
+  chromium,
+  LaunchOptions,
+  Page,
+  PageScreenshotOptions,
+} from "playwright";
 
-const defaultsLunchOptions: PuppeteerLaunchOptions = {
+const defaultLunchOptions: LaunchOptions = {
   headless: true,
   args: ["--no-sandbox", "--disable-setuid-sandbox"],
 };
 
-const defaultsScreenshotOptions: ScreenshotOptions = {
-  fullPage: true,
-  quality: 100,
-  type: "webp",
-};
+const getBrowser = async (options: LaunchOptions = defaultLunchOptions) =>
+  chromium.launch(options);
 
-const getBrowser = async (
-  options: PuppeteerLaunchOptions = defaultsLunchOptions
-) => puppeteer.launch(options);
+const getPage = async (browser: Browser) => browser.newPage();
 
-const getPage = async (browser: puppeteer.Browser) => browser.newPage();
-
-const goto = async (page: puppeteer.Page, url: string) =>
-  page.goto(url, { waitUntil: "networkidle0" });
+const goto = async (page: Page, url: string) =>
+  page.goto(url, { waitUntil: "networkidle" });
 
 const takeScreenShot = async (
-  page: puppeteer.Page,
-  options: ScreenshotOptions = defaultsScreenshotOptions
+  page: Page,
+  options: PageScreenshotOptions = { fullPage: true, quality: 100 }
 ) => page.screenshot(options);
 
 export const takeScreenShotAndClose = async (url: string) => {
